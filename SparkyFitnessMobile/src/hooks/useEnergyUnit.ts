@@ -14,17 +14,17 @@ export function resolveEnergyUnit(unit: string | null | undefined): EnergyUnit {
 
 /**
  * Converts a stored kcal figure into the display unit and rounds it to a whole
- * number. The server, the diary snapshots and every food record stay in kcal;
- * only what the person reads changes.
+ * number. The server, the diary snapshots and every food record hold kcal, so
+ * conversion happens here, at the point of display.
  */
 export function energyForDisplay(kcal: number, unit: EnergyUnit): number {
   return Math.round(convertEnergyValue(kcal, 'kcal', unit));
 }
 
 /**
- * The unit label printed beside a converted figure. Surfaces that already say
- * "Cal" or "cal" for kcal pass that wording as `kcalLabel` so nothing changes
- * for kcal users; every surface says "kJ" for kilojoules.
+ * The unit label printed beside a converted figure. For kilojoules it is always
+ * "kJ". For kcal it is `kcalLabel` when the caller passes one (surfaces that say
+ * "Cal" or "cal" keep their own wording), otherwise the translated "kcal".
  */
 export function energyUnitLabel(
   t: Translate,
