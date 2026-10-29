@@ -14,6 +14,7 @@ import { useCSSVariable } from 'uniwind';
 import Icon from './Icon';
 import NutrientPill from './NutrientPill';
 import { useAppPreferencesStore } from '../stores/appPreferencesStore';
+import { useEnergyUnit } from '../hooks/useEnergyUnit';
 import { getNetCarbsValue } from '../utils/nutrientUtils';
 import { NUTRIENT_META, getNutrientLabel } from '../constants/nutrients';
 import type { DailySummary } from '../types/dailySummary';
@@ -36,6 +37,7 @@ const CalorieBar: React.FC<CalorieBarProps> = ({
   progressPercent,
 }) => {
   const { t } = useTranslation();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const [barWidth, setBarWidth] = useState(0);
   const [trackColor, fillColor] = useCSSVariable([
     '--color-progress-track',
@@ -85,24 +87,24 @@ const CalorieBar: React.FC<CalorieBarProps> = ({
     <View>
       <View className="flex-row justify-between items-baseline mb-3">
         <Text className="text-lg font-bold text-text-primary">
-          {formatLocalizedNumber(Math.round(eaten))}
+          {formatLocalizedNumber(toDisplay(eaten))}
           {hasGoal && (
             <Text className="text-lg font-semibold text-text-muted">
               {/* i18n-audit-ignore-next-line hardcoded-ui-text -- slash and spacing are numeric presentation punctuation. */}
               {t('nutrition.goalSeparator', {
                 defaultValue: ' / {{value}}',
-                value: formatLocalizedNumber(Math.round(goal)),
+                value: formatLocalizedNumber(toDisplay(goal)),
               })}
             </Text>
           )}
           <Text className="text-sm font-normal text-text-muted">
             {' '}
-            {t('nutrition.caloriesShort', { defaultValue: 'kcal' })}
+            {unitLabel(t('nutrition.caloriesShort', { defaultValue: 'kcal' }))}
           </Text>
         </Text>
         {hasGoal && (
           <Text className="text-sm font-bold text-text-primary">
-            {formatLocalizedNumber(Math.abs(Math.round(remaining)))}
+            {formatLocalizedNumber(Math.abs(toDisplay(remaining)))}
             <Text className="text-sm font-normal text-text-muted">
               {' '}
               {remaining >= 0
@@ -174,6 +176,7 @@ const DiaryCalorieMacroSummary: React.FC<DiaryCalorieMacroSummaryProps> = ({
   customNutrients,
 }) => {
   const { t } = useTranslation();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const diarySummaryVisible = useAppPreferencesStore(
     (s) => s.diarySummaryVisible
   );
@@ -274,19 +277,19 @@ const DiaryCalorieMacroSummary: React.FC<DiaryCalorieMacroSummaryProps> = ({
       {projection && (
         <View className="mt-2 rounded-lg bg-surface px-3 py-2">
           <Text className="text-xs font-semibold text-text-primary">
-            {t('diarySummary.projectedTdee', {
-              defaultValue: 'Projected TDEE: {{value}} kcal',
-              value: formatLocalizedNumber(
-                Math.round(projection.projectedBurn)
-              ),
+            {t('diarySummary.projectedTdeeEnergy', {
+              defaultValue: 'Projected TDEE: {{value}} {{unit}}',
+              value: formatLocalizedNumber(toDisplay(projection.projectedBurn)),
+              unit: unitLabel(),
             })}
           </Text>
           <Text className="text-xs text-text-secondary mt-0.5">
-            {t('diarySummary.goalModeTarget', {
-              defaultValue: 'Goal Mode target: {{value}} kcal',
+            {t('diarySummary.goalModeTargetEnergy', {
+              defaultValue: 'Goal Mode target: {{value}} {{unit}}',
               value: formatLocalizedNumber(
-                Math.round(projection.targetCalories ?? goal)
+                toDisplay(projection.targetCalories ?? goal)
               ),
+              unit: unitLabel(),
             })}
           </Text>
           <Text className="text-xs text-text-muted mt-0.5">

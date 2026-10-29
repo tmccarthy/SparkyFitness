@@ -8,6 +8,7 @@ import type { MealType } from '../types/mealTypes';
 import Icon from './Icon';
 import { MEAL_CONFIG } from '../constants/meals';
 import SwipeableFoodRow from './SwipeableFoodRow';
+import { useEnergyUnit } from '../hooks/useEnergyUnit';
 import {
   calculateEntryNutrition,
   calculateMealNutrition,
@@ -69,6 +70,7 @@ const MealSection: React.FC<MealSectionProps> = ({
   onPressMealType,
 }) => {
   const { t } = useTranslation();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const accentPrimary = useCSSVariable('--color-accent-primary') as string;
 
   const label = getMealGroupLabel(group, t);
@@ -95,9 +97,9 @@ const MealSection: React.FC<MealSectionProps> = ({
       {(totalCalories > 0 || targetCalories > 0) && (
         <View className="bg-accent-primary/5 rounded-full px-2.5 py-0.5">
           <Text className="text-xs text-accent-primary font-semibold">
-            {totalCalories}
-            {targetCalories > 0 ? ` / ${targetCalories}` : ''}{' '}
-            {t('foodSummary.caloriesUnit', { defaultValue: 'Cal' })}
+            {toDisplay(totalCalories)}
+            {targetCalories > 0 ? ` / ${toDisplay(targetCalories)}` : ''}{' '}
+            {unitLabel(t('foodSummary.caloriesUnit', { defaultValue: 'Cal' }))}
           </Text>
         </View>
       )}

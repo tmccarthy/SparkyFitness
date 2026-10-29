@@ -2,6 +2,10 @@ import { render, screen } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import DailyNutritionDetailsScreen from '../../src/screens/DailyNutritionDetailsScreen';
 
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
+
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
   useIsFocused: () => true,

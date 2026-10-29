@@ -10,6 +10,7 @@ import { useRowCollapse } from '../hooks/useRowCollapse';
 import { useDeleteFoodEntry } from '../hooks/useDeleteFoodEntry';
 import { useDeleteFoodEntryMeal } from '../hooks/useDeleteFoodEntryMeal';
 import { usePreferences } from '../hooks/usePreferences';
+import { useEnergyUnit } from '../hooks/useEnergyUnit';
 import type { FoodEntry } from '../types/foodEntries';
 import type { EntryNutrition } from '../utils/mealNutrition';
 import { formatTimeLabel } from '../utils/entryTimeDisplay';
@@ -32,6 +33,7 @@ const SwipeableFoodRow: React.FC<SwipeableFoodRowProps> = ({
 }) => {
   const { t } = useTranslation();
   const { preferences } = usePreferences();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const navigation = useNavigation();
   const swipeableRef = useRef<any>(null);
   const invalidateCacheRef = useRef<() => void>(() => {});
@@ -188,12 +190,12 @@ const SwipeableFoodRow: React.FC<SwipeableFoodRowProps> = ({
               className="py-0 px-0"
               textClassName="text-sm text-text-secondary font-medium"
             >
-              {`${Math.round(nutrition.calories)} ${t('foodRow.caloriesUnit', { defaultValue: 'Cal' })} ▾`}
+              {`${toDisplay(nutrition.calories)} ${unitLabel(t('foodRow.caloriesUnit', { defaultValue: 'Cal' }))} ▾`}
             </Button>
           ) : (
             <Text className="text-sm text-text-secondary font-medium mr-2">
-              {Math.round(nutrition.calories)}{' '}
-              {t('foodRow.caloriesUnit', { defaultValue: 'Cal' })}
+              {toDisplay(nutrition.calories)}{' '}
+              {unitLabel(t('foodRow.caloriesUnit', { defaultValue: 'Cal' }))}
             </Text>
           )}
         </View>

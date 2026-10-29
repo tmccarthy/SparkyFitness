@@ -8,6 +8,10 @@ import {
 import SwipeableFoodRow from '../../src/components/SwipeableFoodRow';
 import type { FoodEntry } from '../../src/types/foodEntries';
 
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
+
 const mockNavigate = jest.fn();
 
 jest.mock('@react-navigation/native', () => ({

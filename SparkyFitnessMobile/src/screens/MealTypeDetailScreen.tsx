@@ -16,6 +16,7 @@ import { useActiveWorkoutBarPadding } from '../components/ActiveWorkoutBar';
 import { useDailySummary, useServerConnection, useMealTypes } from '../hooks';
 import { useCopyFoodEntries } from '../hooks/useCopyFoodEntries';
 import { usePreferences } from '../hooks/usePreferences';
+import { useEnergyUnit } from '../hooks/useEnergyUnit';
 import { useScreenHeader } from '../hooks/useScreenHeader';
 import { useNativeIOSHeadersActive } from '../services/nativeTabBarPreference';
 import { formatDateLabel } from '../utils/dateUtils';
@@ -54,6 +55,7 @@ const MealTypeDetailScreen: React.FC<MealTypeDetailScreenProps> = ({
   });
   const { preferences } = usePreferences({ enabled: isConnected });
   const showNetCarbs = preferences?.show_net_carbs === true;
+  const { toDisplay, unitLabel } = useEnergyUnit({ enabled: isConnected });
 
   const { mealTypes } = useMealTypes();
 
@@ -213,7 +215,7 @@ const MealTypeDetailScreen: React.FC<MealTypeDetailScreenProps> = ({
           name={label}
           brand={
             targetCalories > 0
-              ? `${formatDateLabel(date, t, dateLocale)} · ${t('mealTypeDetail.targetCalories', { defaultValue: 'Target: {{calories}} kcal', calories: targetCalories })}`
+              ? `${formatDateLabel(date, t, dateLocale)} · ${t('mealTypeDetail.targetEnergy', { defaultValue: 'Target: {{calories}} {{unit}}', calories: toDisplay(targetCalories), unit: unitLabel() })}`
               : formatDateLabel(date, t, dateLocale)
           }
           values={nutrition.values}

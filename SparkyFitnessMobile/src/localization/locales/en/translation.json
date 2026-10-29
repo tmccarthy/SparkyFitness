@@ -234,7 +234,7 @@
     "emptyForDate": "No food entries for this date",
     "diaryForDate": "Family diary · {{date}}",
     "openMeal": "Open {{meal}} meal",
-    "mealCalories": "{{calories}} kcal",
+    "mealEnergy": "{{calories}} {{unit}}",
     "unnamedFood": "Unnamed food",
     "selectAll": "Select all",
     "deselectAll": "Deselect all",
@@ -242,8 +242,8 @@
     "selectFood": "Select {{food}}",
     "deselectFood": "Deselect {{food}}",
     "continue": "Continue",
-    "nutritionSummary": "{{calories}} kcal · P {{protein}} g · C {{carbs}} g · F {{fat}} g",
-    "selectedNutrition": "Selected: {{calories}} kcal · P {{protein}} g · C {{carbs}} g · F {{fat}} g",
+    "nutritionSummaryEnergy": "{{calories}} {{unit}} · P {{protein}} g · C {{carbs}} g · F {{fat}} g",
+    "selectedNutritionEnergy": "Selected: {{calories}} {{unit}} · P {{protein}} g · C {{carbs}} g · F {{fat}} g",
     "copyReview": "Review copy",
     "copyFrom": "Copying from {{name}}",
     "copyTo": "Copying to {{name}}",
@@ -943,7 +943,7 @@
     "healthTrends": "Health Trends",
     "consumed": "Consumed",
     "remaining": "remaining",
-    "ofCalories": "of {{value}} kcal",
+    "ofEnergy": "of {{value}} {{unit}}",
     "burned": "Burned",
     "hydration": "Hydration",
     "ofVolume": "of {{value}} {{unit}}",
@@ -2562,6 +2562,10 @@
     "notes": "Notes (optional)",
     "notesPlaceholder": "e.g. the recipe, or how you prepare this"
   },
+  "energy": {
+    "kilocaloriesShort": "kcal",
+    "kilojoulesShort": "kJ"
+  },
   "nutrition": {
     "protein": "protein",
     "carbs": "carbs",
@@ -3088,8 +3092,8 @@
     "remaining": "remaining",
     "over": "over",
     "title": "Summary",
-    "projectedTdee": "Projected TDEE: {{value}} kcal",
-    "goalModeTarget": "Goal Mode target: {{value}} kcal",
+    "projectedTdeeEnergy": "Projected TDEE: {{value}} {{unit}}",
+    "goalModeTargetEnergy": "Goal Mode target: {{value}} {{unit}}",
     "healthConnectProjectionSource": "Device total calories",
     "fallbackProjectionSource": "BMR + active calories fallback",
     "legacyProjectionSource": "Device projection",
@@ -5035,7 +5039,7 @@
       "addFood": "Add Food",
       "copyMeal": "Copy meal to another day"
     },
-    "targetCalories": "Target: {{calories}} kcal"
+    "targetEnergy": "Target: {{calories}} {{unit}}"
   },
   "nutrientTrends": {
     "title": "{{nutrient}} Trends",
@@ -5332,11 +5336,11 @@
       "title": "Calories",
       "loadFailed": "Failed to load calorie data",
       "empty": "No calorie data for this period",
-      "tooltip": "{{formattedCount}} kcal consumed",
+      "tooltipEnergy": "{{formattedCount}} {{unit}} consumed",
       "tooltipMacro": "{{percent}}% {{macroLabel}}",
       "otherMacro": "Other",
       "avgCalories": "Avg",
-      "avgCaloriesValue": "{{formattedCount}} kcal",
+      "avgEnergyValue": "{{formattedCount}} {{unit}}",
       "noAverage": "—"
     },
     "loading": "Loading chart...",
@@ -8051,7 +8055,7 @@
     "dailyAverages": "Daily averages",
     "loadFailed": "Failed to load nutrition data",
     "empty": "No food logged in this period",
-    "kcal": "{{value}} kcal",
+    "energy": "{{value}} {{unit}}",
     "grams": "{{value}} g",
     "changeHint": "{{change}} vs previous {{days}} days",
     "onTarget": "Within 10% of goal",

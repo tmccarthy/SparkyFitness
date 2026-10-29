@@ -23,7 +23,7 @@ describe('CaloriesBarChart buildCaloriesTooltipText (locale-aware)', () => {
   test('formats the day total with the date when no segment is selected', async () => {
     await i18n.changeLanguage('en');
 
-    const text = buildCaloriesTooltipText(day, undefined, i18n.t);
+    const text = buildCaloriesTooltipText(day, undefined, i18n.t, 'kcal');
 
     expect(text).toContain('1,850');
     expect(text).toContain('kcal');
@@ -31,8 +31,21 @@ describe('CaloriesBarChart buildCaloriesTooltipText (locale-aware)', () => {
     expect(text).not.toMatch(/%/);
   });
 
+  test('names the energy unit it is given, so a kJ day reads in kJ', () => {
+    const kjDay: CaloriesStackDay = {
+      ...day,
+      totalCalories: 7740,
+      segments: [{ macro: 'other', calories: 7740 }],
+    };
+
+    const text = buildCaloriesTooltipText(kjDay, undefined, i18n.t, 'kJ');
+
+    expect(text).toContain('7,740 kJ consumed');
+    expect(text).not.toContain('kcal');
+  });
+
   test('adds the pressed macro’s share of the day when a segment is selected', () => {
-    const text = buildCaloriesTooltipText(day, day.segments[1], i18n.t);
+    const text = buildCaloriesTooltipText(day, day.segments[1], i18n.t, 'kcal');
 
     // 592 / 1850 = 32%
     expect(text).toContain('1,850');
@@ -42,7 +55,9 @@ describe('CaloriesBarChart buildCaloriesTooltipText (locale-aware)', () => {
   });
 
   test('returns empty copy for no selection', () => {
-    expect(buildCaloriesTooltipText(undefined, undefined, i18n.t)).toBe('');
+    expect(buildCaloriesTooltipText(undefined, undefined, i18n.t, 'kcal')).toBe(
+      ''
+    );
   });
 
   test('labels the neutral segment "Other" for a day logged with no macros', () => {
@@ -55,7 +70,8 @@ describe('CaloriesBarChart buildCaloriesTooltipText (locale-aware)', () => {
     const text = buildCaloriesTooltipText(
       otherDay,
       otherDay.segments[0],
-      i18n.t
+      i18n.t,
+      'kcal'
     );
 
     expect(text).toContain('100%');
@@ -70,14 +86,20 @@ describe('CaloriesBarChart buildCaloriesAverageLabel (locale-aware)', () => {
   });
 
   test('formats the rounded average with a kcal unit', () => {
-    const label = buildCaloriesAverageLabel(1849.6, i18n.t);
+    const label = buildCaloriesAverageLabel(1849.6, i18n.t, 'kcal');
 
     expect(label.title).toBe('Avg');
     expect(label.value).toBe('1,850 kcal');
   });
 
+  test('prints the unit it is given for a kJ average', () => {
+    const label = buildCaloriesAverageLabel(7739.5, i18n.t, 'kJ');
+
+    expect(label.value).toBe('7,740 kJ');
+  });
+
   test('shows a placeholder when nothing in the window is logged', () => {
-    const label = buildCaloriesAverageLabel(null, i18n.t);
+    const label = buildCaloriesAverageLabel(null, i18n.t, 'kcal');
 
     expect(label.value).toBe('—');
   });

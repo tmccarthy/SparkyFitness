@@ -13,6 +13,10 @@ import type { MealType } from '../../src/types/mealTypes';
 import type { DailyGoals } from '../../src/types/goals';
 import type { RootStackScreenProps } from '../../src/types/navigation';
 
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
+
 type ScreenProps = RootStackScreenProps<'MealTypeDetail'>;
 
 const mockNavigation = {

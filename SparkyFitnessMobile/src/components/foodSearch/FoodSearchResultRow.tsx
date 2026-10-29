@@ -11,6 +11,7 @@ import FoodThumbnail from '../FoodThumbnail';
 import { useFoodImageSourceContext } from '../FoodImageSourceProvider';
 import { externalFoodImage } from '../../utils/foodImages';
 import { useOpenLightbox } from '../LightboxProvider';
+import { useEnergyUnit } from '../../hooks/useEnergyUnit';
 import { landingKey } from '../../utils/landingLists';
 import {
   formatServingDescription,
@@ -43,6 +44,7 @@ const OnlineResultRow: React.FC<OnlineResultRowProps> = ({
   onSelect,
 }) => {
   const { t } = useTranslation();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const getImageSource = useFoodImageSourceContext();
   const openLightbox = useOpenLightbox();
   const image = externalFoodImage(item);
@@ -114,8 +116,10 @@ const OnlineResultRow: React.FC<OnlineResultRowProps> = ({
           ) : (
             <>
               <Text className="text-text-primary text-base font-semibold">
-                {Math.round(item.calories)}{' '}
-                {t('foodSearch.labels.caloriesUnit', { defaultValue: 'cal' })}
+                {toDisplay(item.calories)}{' '}
+                {unitLabel(
+                  t('foodSearch.labels.caloriesUnit', { defaultValue: 'cal' })
+                )}
               </Text>
               <Text className="text-text-secondary text-xs">
                 {item.serving_description

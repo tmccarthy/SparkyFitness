@@ -10,6 +10,10 @@ import { initializeI18n } from '../../src/localization/i18n';
 import { buildNutritionInsights } from '../../src/utils/nutritionReport';
 import type { NutritionTrendPoint } from '../../src/services/api/reportsApi';
 
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
+
 const mockUseNutritionReport = jest.fn();
 jest.mock('../../src/components/DateRangeSheet', () => {
   const React = require('react');

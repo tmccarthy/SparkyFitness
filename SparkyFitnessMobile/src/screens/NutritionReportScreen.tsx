@@ -15,6 +15,7 @@ import ReportHighlights, {
 import { useReportCustomization } from '../hooks/useReportCustomization';
 import { useCustomNutrients } from '../hooks/useCustomNutrients';
 import { useServerConnection } from '../hooks/useServerConnection';
+import { useEnergyUnit } from '../hooks/useEnergyUnit';
 import {
   FAT_BREAKDOWN_NUTRIENTS,
   MICRONUTRIENTS,
@@ -41,6 +42,7 @@ const NutritionReportScreen: React.FC<NutritionReportScreenProps> = ({
   navigation,
 }) => {
   const { t } = useTranslation();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const {
     window: reportWindow,
     rangeProps,
@@ -59,9 +61,10 @@ const NutritionReportScreen: React.FC<NutritionReportScreenProps> = ({
   const fmt = (value: number, digits = 0) =>
     formatLocalizedNumber(value, { maximumFractionDigits: digits });
   const kcal = (value: number) =>
-    t('nutritionReport.kcal', {
-      defaultValue: '{{value}} kcal',
-      value: fmt(Math.round(value)),
+    t('nutritionReport.energy', {
+      defaultValue: '{{value}} {{unit}}',
+      value: fmt(toDisplay(value)),
+      unit: unitLabel(),
     });
   const grams = (value: number) =>
     t('nutritionReport.grams', {

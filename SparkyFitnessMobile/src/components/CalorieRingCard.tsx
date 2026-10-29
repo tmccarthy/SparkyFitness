@@ -4,6 +4,7 @@ import { View, Text } from 'react-native';
 import { useCSSVariable } from 'uniwind';
 import ProgressRing from './ProgressRing';
 import { formatLocalizedNumber } from '../localization';
+import { useEnergyUnit } from '../hooks/useEnergyUnit';
 
 interface SideStatProps {
   label: string;
@@ -35,19 +36,20 @@ const CalorieRingCard: React.FC<CalorieRingCardProps> = ({
   progressPercent,
 }) => {
   const { t } = useTranslation();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const [progressTrackColor, progressFillColor] = useCSSVariable([
     '--color-progress-track',
     '--color-calories',
   ]) as [string, string];
 
-  const displayRemaining = Math.round(remainingCalories) || 0;
+  const displayRemaining = toDisplay(remainingCalories) || 0;
 
   return (
     <View className="bg-surface rounded-xl p-4 mb-3 shadow-sm">
       <View className="flex-row items-center justify-center">
         <SideStat
           label={t('dashboard.consumed', { defaultValue: 'Consumed' })}
-          value={caloriesConsumed}
+          value={toDisplay(caloriesConsumed)}
         />
 
         <View className="relative items-center justify-center mx-2">
@@ -68,9 +70,10 @@ const CalorieRingCard: React.FC<CalorieRingCardProps> = ({
               {t('dashboard.remaining', { defaultValue: 'remaining' })}
             </Text>
             <Text className="text-text-muted text-xs mt-0.5">
-              {t('dashboard.ofCalories', {
-                defaultValue: 'of {{value}} kcal',
-                value: formatLocalizedNumber(calorieGoal),
+              {t('dashboard.ofEnergy', {
+                defaultValue: 'of {{value}} {{unit}}',
+                value: formatLocalizedNumber(toDisplay(calorieGoal)),
+                unit: unitLabel(),
               })}
             </Text>
           </View>
@@ -78,7 +81,7 @@ const CalorieRingCard: React.FC<CalorieRingCardProps> = ({
 
         <SideStat
           label={t('dashboard.burned', { defaultValue: 'Burned' })}
-          value={caloriesBurned}
+          value={toDisplay(caloriesBurned)}
         />
       </View>
     </View>

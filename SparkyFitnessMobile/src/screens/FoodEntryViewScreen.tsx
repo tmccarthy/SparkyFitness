@@ -42,6 +42,7 @@ import { getLocalizedMealLabel } from '../constants/meals';
 import {
   useMealTypes,
   usePreferences,
+  useEnergyUnit,
   useServerConnection,
   useCustomNutrients,
   useSetFoodEntryImages,
@@ -848,8 +849,10 @@ const FoodEntryViewScreen: React.FC<FoodEntryViewScreenProps> = ({
 
   const { preferences } = usePreferences();
   const showNetCarbs = preferences?.show_net_carbs === true;
+  const { toDisplay: energyForDisplay, unitLabel: energyUnitLabel } =
+    useEnergyUnit();
 
-  const viewCalories = Math.round(scaledValue(entry.calories, entry));
+  const viewCalories = energyForDisplay(scaledValue(entry.calories, entry));
   const viewProtein = Math.round(scaledValue(entry.protein, entry));
   const viewCarbs = Math.round(scaledValue(entry.carbs, entry));
   const viewFat = Math.round(scaledValue(entry.fat, entry));
@@ -1147,11 +1150,13 @@ const FoodEntryViewScreen: React.FC<FoodEntryViewScreenProps> = ({
               <View className="flex-1 items-center pr-10">
                 <Text className="text-text-primary text-3xl font-medium">
                   {isEditing
-                    ? Math.round(scaled(displayValues.calories))
+                    ? energyForDisplay(scaled(displayValues.calories))
                     : viewCalories}
                 </Text>
                 <Text className="text-text-secondary text-base mt-1">
-                  {t('nutrients.calories', { defaultValue: 'Calories' })}
+                  {energyUnitLabel(
+                    t('nutrients.calories', { defaultValue: 'Calories' })
+                  )}
                 </Text>
               </View>
               <Animated.View

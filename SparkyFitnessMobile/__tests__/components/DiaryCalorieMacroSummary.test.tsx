@@ -7,6 +7,11 @@ import {
 } from '../../src/stores/appPreferencesStore';
 import type { DailySummary } from '../../src/types/dailySummary';
 import type { UserCustomNutrient } from '../../src/hooks/useCustomNutrients';
+import { mockEnergyUnitRef } from '../helpers/energyUnitMock';
+
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
 
 jest.mock('@react-navigation/native', () => ({
   ...jest.requireActual('@react-navigation/native'),
@@ -70,6 +75,30 @@ function renderWidget(
 describe('DiaryCalorieMacroSummary', () => {
   beforeEach(() => {
     __resetAppPreferencesStoreForTests();
+    mockEnergyUnitRef.current = 'kcal';
+  });
+
+  it('shows eaten, goal and remaining in kilojoules when the energy unit is kJ (#1968)', () => {
+    mockEnergyUnitRef.current = 'kJ';
+    useAppPreferencesStore.setState({ diarySummaryVisible: true });
+    const { getByText, queryByText } = renderWidget({
+      summary: buildSummary({
+        calorieBalance: {
+          ...buildSummary().calorieBalance,
+          eaten: 500,
+          goal: 2000,
+          remaining: 1500,
+          progress: 25,
+        },
+      }),
+    });
+
+    // 500 kcal = 2,092 kJ; 2,000 kcal = 8,368 kJ; 1,500 kcal = 6,276 kJ
+    expect(getByText(/2,092/)).toBeTruthy();
+    expect(getByText(' / 8,368')).toBeTruthy();
+    expect(getByText(/6,276/)).toBeTruthy();
+    expect(getByText(' kJ')).toBeTruthy();
+    expect(queryByText(' kcal')).toBeNull();
   });
 
   it('shows the food budget including credited activity beside eaten calories', () => {

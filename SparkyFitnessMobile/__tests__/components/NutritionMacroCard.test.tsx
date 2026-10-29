@@ -2,6 +2,10 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import NutritionMacroCard from '../../src/components/NutritionMacroCard';
 
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
+
 jest.mock('../../src/components/MacroCompositionRing', () => {
   const { View } = require('react-native');
   return {

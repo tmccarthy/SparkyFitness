@@ -2,6 +2,10 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import FoodNutritionSummary from '../../src/components/FoodNutritionSummary';
 
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
+
 const mockPreferences: { current: unknown[] } = { current: [] };
 
 jest.mock('../../src/hooks', () => ({

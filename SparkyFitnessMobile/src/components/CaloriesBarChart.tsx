@@ -39,6 +39,8 @@ import {
   type CaloriesStackSegment,
 } from './charts/caloriesStackLayout';
 import { StatTile, type StatLabel } from './charts/StatTile';
+import { useEnergyUnit } from '../hooks/useEnergyUnit';
+import { convertEnergyValue } from '@workspace/shared';
 
 type CaloriesBarChartProps = {
   data: CaloriesDataPoint[];
@@ -114,18 +116,21 @@ const getCaloriesSegmentLabel = (
  * Builds the tooltip copy from the selected day's total and date, plus the pressed macro's
  * share of that total when the long press landed on a specific stacked segment. Derived
  * from the current `t` translator on every render so an already-visible tooltip cannot
- * retain stale copy after a language switch.
+ * retain stale copy after a language switch. `day` is already in the display energy unit
+ * and `unitLabel` names it.
  */
 export const buildCaloriesTooltipText = (
   day: CaloriesStackDay | undefined,
   selectedSegment: CaloriesStackSegment | undefined,
-  t: ReturnType<typeof useTranslation>['t']
+  t: ReturnType<typeof useTranslation>['t'],
+  unitLabel: string
 ): string => {
   if (!day) return DEFAULT_TOOLTIP;
   const formattedCount = formatLocalizedNumber(Math.round(day.totalCalories));
-  const totalPart = t('charts.calories.tooltip', {
+  const totalPart = t('charts.calories.tooltipEnergy', {
     formattedCount,
-    defaultValue: '{{formattedCount}} kcal consumed',
+    unit: unitLabel,
+    defaultValue: '{{formattedCount}} {{unit}} consumed',
   });
   const datePart = formatTooltipDate(day.day);
 
@@ -155,7 +160,8 @@ export const buildCaloriesTooltipText = (
  */
 export const buildCaloriesAverageLabel = (
   averageCalories: number | null,
-  t: ReturnType<typeof useTranslation>['t']
+  t: ReturnType<typeof useTranslation>['t'],
+  unitLabel: string
 ): StatLabel => ({
   // Just "Avg", not "Avg calories": Sleep's two tiles need "time in bed" vs. "time asleep"
   // to tell them apart, but this card only ever has the one stat.
@@ -163,11 +169,39 @@ export const buildCaloriesAverageLabel = (
   value:
     averageCalories == null
       ? t('charts.calories.noAverage', { defaultValue: '—' })
-      : t('charts.calories.avgCaloriesValue', {
+      : t('charts.calories.avgEnergyValue', {
           formattedCount: formatLocalizedNumber(Math.round(averageCalories)),
-          defaultValue: '{{formattedCount}} kcal',
+          unit: unitLabel,
+          defaultValue: '{{formattedCount}} {{unit}}',
         }),
 });
+
+/**
+ * The stack is built in kcal (the macro split is grams x 4/4/9) and then scaled as a whole,
+ * so the bars, the axis, the goal line and the tooltip all read in kJ together.
+ */
+const scaleCaloriesStackDays = (
+  days: CaloriesStackDay[],
+  factor: number
+): CaloriesStackDay[] =>
+  factor === 1
+    ? days
+    : days.map((day) => ({
+        ...day,
+        totalCalories: day.totalCalories * factor,
+        segments: day.segments.map((segment) => ({
+          ...segment,
+          calories: segment.calories * factor,
+        })),
+      }));
+
+const scaleGoals = (
+  goals: (number | null)[] | undefined,
+  factor: number
+): (number | null)[] | undefined =>
+  factor === 1
+    ? goals
+    : goals?.map((goal) => (goal == null || goal <= 0 ? goal : goal * factor));
 
 /** Evenly spaced day indices, so 90 columns do not print 90 overlapping labels. */
 const buildXLabelIndices = (dayCount: number, tickCount: number): number[] => {
@@ -197,8 +231,10 @@ const CaloriesBarChart: React.FC<CaloriesBarChartProps> = ({
   goals,
 }) => {
   const { t } = useTranslation();
+  const { energyUnit, unitLabel } = useEnergyUnit();
+  // One plain number is all the memos below depend on for the unit.
+  const energyFactor = convertEnergyValue(1, 'kcal', energyUnit);
   const axisFont = useChartFont(CHART_LABEL_FONT_SIZE);
-  const averageLabel = buildCaloriesAverageLabel(averageCalories, t);
   const [plotWidth, setPlotWidth] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [selectedPointY, setSelectedPointY] = useState<number | null>(null);
@@ -219,7 +255,14 @@ const CaloriesBarChart: React.FC<CaloriesBarChartProps> = ({
     other: otherColor,
   };
 
-  const days = useMemo(() => buildCaloriesStackDays(data), [data]);
+  const days = useMemo(
+    () => scaleCaloriesStackDays(buildCaloriesStackDays(data), energyFactor),
+    [data, energyFactor]
+  );
+  const displayGoals = useMemo(
+    () => scaleGoals(goals, energyFactor),
+    [goals, energyFactor]
+  );
 
   const hasData = useMemo(
     () => days.some((day) => day.totalCalories > 0),
@@ -231,9 +274,12 @@ const CaloriesBarChart: React.FC<CaloriesBarChartProps> = ({
   // `TrendBarChart` uses for Steps/Hydration.
   const yAxisScale = useMemo(() => {
     const dataMax = Math.max(0, ...days.map((day) => day.totalCalories));
-    const effectiveMax = resolveEffectiveMaxCalories(dataMax, goals ?? []);
+    const effectiveMax = resolveEffectiveMaxCalories(
+      dataMax,
+      displayGoals ?? []
+    );
     return computeNiceYAxisScale(0, effectiveMax);
-  }, [days, goals]);
+  }, [days, displayGoals]);
   const maxCalories = yAxisScale.max;
 
   const yAxisLabelWidth = useMemo(
@@ -299,8 +345,6 @@ const CaloriesBarChart: React.FC<CaloriesBarChartProps> = ({
     return days[selectedIndex]?.segments[blockIndex];
   }, [selectedIndex, selectedPointY, columns, days]);
 
-  const tooltipText = buildCaloriesTooltipText(selectedDay, selectedSegment, t);
-
   const touchLayout: ChartTouchLayout = useMemo(() => {
     if (plotWidth <= 0 || columns.length === 0) return EMPTY_CHART_TOUCH_LAYOUT;
 
@@ -332,12 +376,27 @@ const CaloriesBarChart: React.FC<CaloriesBarChartProps> = ({
     () =>
       buildCaloriesGoalSegments(
         columns,
-        goals ?? [],
+        displayGoals ?? [],
         maxCalories,
         plotWidth,
         PLOT_HEIGHT
       ),
-    [columns, goals, maxCalories, plotWidth]
+    [columns, displayGoals, maxCalories, plotWidth]
+  );
+
+  // Translated after the hooks above: a call into a hook-returned function earlier in the
+  // render stops the React Compiler from preserving the manual memoization that follows it.
+  const unitText = unitLabel();
+  const averageLabel = buildCaloriesAverageLabel(
+    averageCalories == null ? null : averageCalories * energyFactor,
+    t,
+    unitText
+  );
+  const tooltipText = buildCaloriesTooltipText(
+    selectedDay,
+    selectedSegment,
+    t,
+    unitText
   );
 
   const formatXLabel = range === '7d' ? formatXLabel7d : formatXLabel30d90d;

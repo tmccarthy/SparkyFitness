@@ -12,6 +12,7 @@ import FoodThumbnail from '../FoodThumbnail';
 import { useFoodImageSourceContext } from '../FoodImageSourceProvider';
 import { primaryImageOf, usableFoodImages } from '../../utils/foodImages';
 import { useOpenLightbox } from '../LightboxProvider';
+import { useEnergyUnit } from '../../hooks/useEnergyUnit';
 import type { FoodInfoItem } from '../../types/foodInfo';
 import type { FoodItem, TopFoodItem } from '../../types/foods';
 
@@ -46,6 +47,7 @@ const FoodResultRow: React.FC<FoodResultRowProps> = ({
   selection,
 }) => {
   const { t } = useTranslation();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const status = deriveShareStatus(
     item.user_id,
     item.shared_with_public,
@@ -140,8 +142,10 @@ const FoodResultRow: React.FC<FoodResultRowProps> = ({
         </View>
         <View className="items-end">
           <Text className="text-text-primary text-base font-semibold">
-            {Math.round(item.default_variant.calories)}{' '}
-            {t('foodSearch.labels.caloriesUnit', { defaultValue: 'cal' })}
+            {toDisplay(item.default_variant.calories)}{' '}
+            {unitLabel(
+              t('foodSearch.labels.caloriesUnit', { defaultValue: 'cal' })
+            )}
           </Text>
           <Text className="text-text-secondary text-xs">
             {/* i18n-audit-ignore-next-line hardcoded-ui-text -- quantity and unit are literal data values. */}

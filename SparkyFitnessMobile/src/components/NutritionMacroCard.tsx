@@ -7,6 +7,7 @@ import ProgressRing from './ProgressRing';
 import { getNetCarbsValue } from '../utils/nutrientUtils';
 import { localizeNutrientKey } from '../utils/nutrientLocalization';
 import { formatLocalizedNumber } from '../localization';
+import { useEnergyUnit } from '../hooks/useEnergyUnit';
 
 export interface NutritionGoalPercentages {
   calories?: number | null;
@@ -72,6 +73,7 @@ const NutritionMacroCard: React.FC<NutritionMacroCardProps> = ({
     ]) as [string, string, string, string, string];
 
   const { t } = useTranslation();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const useNetCarbs = showNetCarbs && fiber !== undefined;
   const displayCarbs = useNetCarbs ? getNetCarbsValue(carbs, fiber) : carbs;
   const carbsLabel = useNetCarbs
@@ -171,28 +173,34 @@ const NutritionMacroCard: React.FC<NutritionMacroCardProps> = ({
                 <Text className="text-text-primary text-xl font-bold">
                   {hasCalorieGoal
                     ? formatLocalizedNumber(
-                        Math.max(0, Math.round(calorieGoal - calories))
+                        Math.max(0, toDisplay(calorieGoal - calories))
                       )
-                    : formatLocalizedNumber(Math.round(calories))}
+                    : formatLocalizedNumber(toDisplay(calories))}
                 </Text>
                 <Text className="text-text-muted text-[10px] uppercase font-semibold mt-0.5">
                   {hasCalorieGoal
                     ? t('nutrition.left', { defaultValue: 'left' })
-                    : t('nutrition.caloriesShort', { defaultValue: 'kcal' })}
+                    : unitLabel(
+                        t('nutrition.caloriesShort', { defaultValue: 'kcal' })
+                      )}
                 </Text>
               </View>
             </View>
             {hasCalorieGoal ? (
               <Text className="text-text-muted text-xs mt-2 text-center">
-                {formatLocalizedNumber(Math.round(calories))} /{' '}
-                {formatLocalizedNumber(Math.round(calorieGoal))}{' '}
-                {t('nutrition.caloriesShort', { defaultValue: 'kcal' })} (
-                {goalPercentages?.calories}%)
+                {formatLocalizedNumber(toDisplay(calories))} /{' '}
+                {formatLocalizedNumber(toDisplay(calorieGoal))}{' '}
+                {unitLabel(
+                  t('nutrition.caloriesShort', { defaultValue: 'kcal' })
+                )}{' '}
+                ({goalPercentages?.calories}%)
               </Text>
             ) : (
               <Text className="text-text-muted text-xs mt-2 text-center">
-                {formatLocalizedNumber(Math.round(calories))}{' '}
-                {t('nutrition.caloriesShort', { defaultValue: 'kcal' })}
+                {formatLocalizedNumber(toDisplay(calories))}{' '}
+                {unitLabel(
+                  t('nutrition.caloriesShort', { defaultValue: 'kcal' })
+                )}
               </Text>
             )}
           </View>
@@ -307,22 +315,26 @@ const NutritionMacroCard: React.FC<NutritionMacroCardProps> = ({
                 <Text className="text-text-primary text-3xl font-medium">
                   {hasCalorieGoal
                     ? formatLocalizedNumber(
-                        Math.max(0, Math.round(calorieGoal - calories))
+                        Math.max(0, toDisplay(calorieGoal - calories))
                       )
-                    : formatLocalizedNumber(Math.round(calories))}
+                    : formatLocalizedNumber(toDisplay(calories))}
                 </Text>
                 <Text className="text-text-secondary text-xs mt-0.5">
                   {hasCalorieGoal
                     ? t('nutrition.left', { defaultValue: 'left' })
-                    : t('nutrition.calories', { defaultValue: 'calories' })}
+                    : unitLabel(
+                        t('nutrition.calories', { defaultValue: 'calories' })
+                      )}
                 </Text>
               </View>
             </View>
             {hasCalorieGoal ? (
               <Text className="text-text-secondary text-xs font-medium mt-2 text-center">
-                {formatLocalizedNumber(Math.round(calories))} /{' '}
-                {formatLocalizedNumber(Math.round(calorieGoal))}{' '}
-                {t('nutrition.caloriesShort', { defaultValue: 'kcal' })}
+                {formatLocalizedNumber(toDisplay(calories))} /{' '}
+                {formatLocalizedNumber(toDisplay(calorieGoal))}{' '}
+                {unitLabel(
+                  t('nutrition.caloriesShort', { defaultValue: 'kcal' })
+                )}
               </Text>
             ) : null}
           </View>

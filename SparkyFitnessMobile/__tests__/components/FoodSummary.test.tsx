@@ -4,6 +4,11 @@ import FoodSummary from '../../src/components/FoodSummary';
 import type { DailyGoals } from '../../src/types/goals';
 import type { FoodEntry } from '../../src/types/foodEntries';
 import type { MealType } from '../../src/types/mealTypes';
+import { mockEnergyUnitRef } from '../helpers/energyUnitMock';
+
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
 
 jest.mock('../../src/components/Icon', () => {
   const { View } = require('react-native');
@@ -74,6 +79,49 @@ const entry = (
 ): FoodEntry => ({ id, meal_type_id, meal_type }) as FoodEntry;
 
 describe('FoodSummary', () => {
+  beforeEach(() => {
+    mockEnergyUnitRef.current = 'kcal';
+  });
+
+  it('shows each meal total in Cal by default', () => {
+    const view = render(
+      <FoodSummary
+        foodEntries={[
+          {
+            ...entry('1', 'sys-b', 'breakfast'),
+            calories: 300,
+            quantity: 1,
+            serving_size: 1,
+          },
+        ]}
+        mealTypes={mealTypes}
+      />
+    );
+
+    expect(view.getByText(/300\s+Cal/)).toBeTruthy();
+  });
+
+  it('shows each meal total in kJ when the energy unit is kJ (#1968)', () => {
+    mockEnergyUnitRef.current = 'kJ';
+    const view = render(
+      <FoodSummary
+        foodEntries={[
+          {
+            ...entry('1', 'sys-b', 'breakfast'),
+            calories: 300,
+            quantity: 1,
+            serving_size: 1,
+          },
+        ]}
+        mealTypes={mealTypes}
+      />
+    );
+
+    // 300 kcal = 1,255 kJ
+    expect(view.getByText(/1255\s+kJ/)).toBeTruthy();
+    expect(view.queryByText(/Cal/)).toBeNull();
+  });
+
   it('renders custom meal types as their own sections (not merged into Other)', () => {
     const view = render(
       <FoodSummary

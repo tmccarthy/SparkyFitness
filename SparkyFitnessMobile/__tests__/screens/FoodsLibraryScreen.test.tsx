@@ -19,6 +19,10 @@ import {
   pressHeaderMenuAction,
 } from './helpers/nativeHeaderTestUtils';
 
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
+
 jest.mock('../../src/hooks', () => ({
   useFoodsLibrary: jest.fn(),
   useFavorites: jest.fn(),

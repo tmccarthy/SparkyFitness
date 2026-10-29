@@ -28,6 +28,8 @@ jest.mock('@react-navigation/native', () => ({
 jest.mock('../../src/hooks', () => ({
   useNutrientDisplayPreferences: jest.fn(() => ({ preferences: [] })),
   useMealTypes: jest.fn(),
+  useEnergyUnit: () =>
+    require('../helpers/energyUnitMock').energyUnitModuleMock().useEnergyUnit(),
   usePreferences: jest.fn(() => ({
     preferences: undefined,
     isLoading: false,

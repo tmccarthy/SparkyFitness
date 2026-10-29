@@ -27,6 +27,10 @@ import {
 import type { Meal } from '../../src/types/meals';
 import type { FoodItem } from '../../src/types/foods';
 
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
+
 // The barrel is mocked (and useFoodSearchSelection deliberately left out of
 // the factory): the screen imports it directly, so the real hook runs — this
 // suite exercises the real basket under the screen's wiring.

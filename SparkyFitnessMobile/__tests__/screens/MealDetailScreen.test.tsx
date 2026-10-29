@@ -14,6 +14,10 @@ import {
 } from '../../src/hooks';
 import type { Meal } from '../../src/types/meals';
 
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
+
 jest.mock('../../src/hooks', () => ({
   useNutrientDisplayPreferences: jest.fn(() => ({ preferences: [] })),
   useDeleteMeal: jest.fn(),

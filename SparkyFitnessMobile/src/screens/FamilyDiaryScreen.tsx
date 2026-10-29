@@ -14,6 +14,7 @@ import Button from '../components/ui/Button';
 import { useFamilyDailySummary } from '../hooks';
 import { familyUsersQueryKey } from '../hooks/queryKeys';
 import { useScreenHeader } from '../hooks/useScreenHeader';
+import { useEnergyUnit } from '../hooks/useEnergyUnit';
 import { useNativeIOSHeadersActive } from '../services/nativeTabBarPreference';
 import { ApiError } from '../services/api/errors';
 import type { RootStackScreenProps } from '../types/navigation';
@@ -32,6 +33,7 @@ const FamilyDiaryScreen: React.FC<FamilyDiaryScreenProps> = ({
 }) => {
   const { familyUser, date } = route.params;
   const { t, i18n } = useTranslation();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const insets = useSafeAreaInsets();
   const activeWorkoutBarPadding = useActiveWorkoutBarPadding('stack');
   const usesNativeHeader = useNativeIOSHeadersActive();
@@ -150,9 +152,10 @@ const FamilyDiaryScreen: React.FC<FamilyDiaryScreenProps> = ({
                   {group.mealTypeName}
                 </Text>
                 <Text className="text-sm text-text-secondary">
-                  {t('familyDiary.mealCalories', {
-                    calories: Math.round(totals.calories),
-                    defaultValue: '{{calories}} kcal',
+                  {t('familyDiary.mealEnergy', {
+                    calories: toDisplay(totals.calories),
+                    unit: unitLabel(),
+                    defaultValue: '{{calories}} {{unit}}',
                   })}
                 </Text>
               </View>

@@ -28,6 +28,8 @@ jest.mock('@react-navigation/native', () => {
 
 jest.mock('../../src/hooks', () => ({
   useCreateMeal: jest.fn(),
+  useEnergyUnit: () =>
+    require('../helpers/energyUnitMock').energyUnitModuleMock().useEnergyUnit(),
   useMeal: jest.fn(),
   useUpdateMeal: jest.fn(),
 }));

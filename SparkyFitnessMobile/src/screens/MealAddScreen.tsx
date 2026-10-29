@@ -22,7 +22,7 @@ import { usableFoodImages } from '../utils/foodImages';
 import StatusView from '../components/StatusView';
 import { FooterSaveBar } from '../components/FormScreenChrome';
 import Icon from '../components/Icon';
-import { useCreateMeal, useMeal, useUpdateMeal } from '../hooks';
+import { useCreateMeal, useEnergyUnit, useMeal, useUpdateMeal } from '../hooks';
 import FoodImagePicker from '../components/FoodImagePicker';
 import {
   pickerImagesDiffer,
@@ -129,6 +129,7 @@ const mealIngredientToPayload = ({
 
 const MealAddScreen: React.FC<MealAddScreenProps> = ({ navigation, route }) => {
   const { t } = useTranslation();
+  const { convert: convertEnergy, unitLabel } = useEnergyUnit();
   const localizedServingUnitOptions = useMemo(
     () =>
       SERVING_UNIT_OPTIONS.map((option) => ({
@@ -738,7 +739,7 @@ const MealAddScreen: React.FC<MealAddScreenProps> = ({ navigation, route }) => {
                 const quantity = toFiniteNumber(ingredient.quantity);
                 const scale = servingSize > 0 ? quantity / servingSize : 0;
                 const ingredientCalories = formatCaloriesDisplay(
-                  toFiniteNumber(ingredient.calories) * scale
+                  convertEnergy(toFiniteNumber(ingredient.calories) * scale)
                 );
                 const ingredientProtein = formatMacroDisplay(
                   toFiniteNumber(ingredient.protein) * scale
@@ -849,9 +850,11 @@ const MealAddScreen: React.FC<MealAddScreenProps> = ({ navigation, route }) => {
                         <View className="items-end">
                           <Text className="text-text-primary text-base font-semibold">
                             {ingredientCalories}{' '}
-                            {t('foodSearch.labels.caloriesUnit', {
-                              defaultValue: 'cal',
-                            })}
+                            {unitLabel(
+                              t('foodSearch.labels.caloriesUnit', {
+                                defaultValue: 'cal',
+                              })
+                            )}
                           </Text>
                           <Text className="text-text-muted text-sm mt-1">
                             {formatServingSizeDisplay(quantity)}{' '}
@@ -895,10 +898,12 @@ const MealAddScreen: React.FC<MealAddScreenProps> = ({ navigation, route }) => {
                     {t('mealBuilder.mealTotal', { defaultValue: 'Meal total' })}
                   </Text>
                   <Text className="text-text-primary text-base font-semibold text-right">
-                    {formatCaloriesDisplay(totals.calories)}{' '}
-                    {t('foodSearch.labels.caloriesUnit', {
-                      defaultValue: 'cal',
-                    })}
+                    {formatCaloriesDisplay(convertEnergy(totals.calories))}{' '}
+                    {unitLabel(
+                      t('foodSearch.labels.caloriesUnit', {
+                        defaultValue: 'cal',
+                      })
+                    )}
                   </Text>
                 </View>
                 <View className="flex-row items-start gap-2 mt-1">
@@ -929,11 +934,13 @@ const MealAddScreen: React.FC<MealAddScreenProps> = ({ navigation, route }) => {
                     </Text>
                     <Text className="text-text-primary text-base font-semibold text-right">
                       {formatCaloriesDisplay(
-                        totals.calories / totalServingsCount
+                        convertEnergy(totals.calories / totalServingsCount)
                       )}{' '}
-                      {t('foodSearch.labels.caloriesUnit', {
-                        defaultValue: 'cal',
-                      })}
+                      {unitLabel(
+                        t('foodSearch.labels.caloriesUnit', {
+                          defaultValue: 'cal',
+                        })
+                      )}
                     </Text>
                   </View>
                   <View className="flex-row items-start gap-2 mt-1">

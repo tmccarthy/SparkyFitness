@@ -36,6 +36,7 @@ export {
 } from './useQuickActions';
 
 export { usePreferences } from './usePreferences';
+export { useEnergyUnit } from './useEnergyUnit';
 export { useRefetchOnFocus } from './useRefetchOnFocus';
 export { useWaterIntakeMutation } from './useWaterIntakeMutation';
 export { useFoods } from './useFoods';

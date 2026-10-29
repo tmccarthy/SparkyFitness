@@ -7,6 +7,10 @@ import { ApiError } from '../../src/services/api/errors';
 import type { FoodEntry } from '../../src/types/foodEntries';
 import type { FamilyDiaryUser } from '../../src/types/familyDiary';
 
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
+
 const familyUser: FamilyDiaryUser = {
   userId: 'family-user-id',
   displayName: 'Alex Family',
