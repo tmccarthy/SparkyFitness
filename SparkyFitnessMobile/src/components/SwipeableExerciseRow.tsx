@@ -8,6 +8,7 @@ import Animated from 'react-native-reanimated';
 import { useCSSVariable } from 'uniwind';
 import { DeleteRowAction } from './SwipeableDeleteRow';
 import { useRowCollapse } from '../hooks/useRowCollapse';
+import { useEnergyUnit } from '../hooks/useEnergyUnit';
 import type { ExerciseSessionResponse } from '@workspace/shared';
 import { canEditGroupedWorkout } from '@workspace/shared';
 import Icon from './Icon';
@@ -43,6 +44,7 @@ const SwipeableExerciseRow: React.FC<SwipeableExerciseRowProps> = ({
   distanceUnit = 'km',
 }) => {
   const { t } = useTranslation();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const swipeableRef = useRef<SwipeableMethods | null>(null);
   const invalidateCacheRef = useRef<() => void>(() => {});
   const { collapse, handleLayout, animatedStyle } = useRowCollapse(() =>
@@ -104,7 +106,11 @@ const SwipeableExerciseRow: React.FC<SwipeableExerciseRowProps> = ({
     calories,
     t,
     weightUnit,
-    distanceUnit
+    distanceUnit,
+    {
+      toDisplay,
+      unit: unitLabel(t('workout.caloriesUnit', { defaultValue: 'Cal' })),
+    }
   );
 
   const handleLongPress = () => {

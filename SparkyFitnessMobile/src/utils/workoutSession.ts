@@ -306,14 +306,26 @@ export function getWorkoutSummary(
   };
 }
 
+/**
+ * How a session subtitle prints its energy figure: `toDisplay` turns the
+ * stored kcal into the display unit (rounded) and `unit` is the text printed
+ * after it. Omitted, the subtitle stays in kcal with the "Cal" wording.
+ */
+export interface SessionEnergyFormat {
+  toDisplay: (kcal: number) => number;
+  unit: string;
+}
+
 export function buildSessionSubtitle(
   session: ExerciseSessionResponse,
   duration: number,
   calories: number,
   t: TFunction,
   weightUnit: 'kg' | 'lbs' = 'kg',
-  distanceUnit: 'km' | 'miles' = 'km'
+  distanceUnit: 'km' | 'miles' = 'km',
+  energy?: SessionEnergyFormat
 ): string {
+  const caloriesPart = `${energy ? energy.toDisplay(calories) : Math.round(calories)} ${energy?.unit ?? t('workout.caloriesUnit', { defaultValue: 'Cal' })}`;
   if (session.type === 'preset') {
     const exerciseCount = session.exercises.length;
     // A cardio effort's backing set is an implementation detail (every read
@@ -427,10 +439,7 @@ export function buildSessionSubtitle(
         `${formatLocalizedNumber(dist, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${distanceUnit === 'miles' ? 'mi' : 'km'}`
       );
     }
-    if (calories > 0)
-      parts.push(
-        `${Math.round(calories)} ${t('workout.caloriesUnit', { defaultValue: 'Cal' })}`
-      );
+    if (calories > 0) parts.push(caloriesPart);
     return parts.join(' · ');
   }
 
@@ -461,10 +470,7 @@ export function buildSessionSubtitle(
       parts.push(`${formatLocalizedNumber(vol)} ${weightUnit}`);
     }
     if (duration > 0) parts.push(formatDuration(duration));
-    if (calories > 0)
-      parts.push(
-        `${Math.round(calories)} ${t('workout.caloriesUnit', { defaultValue: 'Cal' })}`
-      );
+    if (calories > 0) parts.push(caloriesPart);
     return parts.join(' · ');
   }
 
@@ -478,10 +484,7 @@ export function buildSessionSubtitle(
       `${formatLocalizedNumber(dist, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${label}`
     );
   }
-  if (calories > 0)
-    parts.push(
-      `${Math.round(calories)} ${t('workout.caloriesUnit', { defaultValue: 'Cal' })}`
-    );
+  if (calories > 0) parts.push(caloriesPart);
   return parts.join(' · ');
 }
 

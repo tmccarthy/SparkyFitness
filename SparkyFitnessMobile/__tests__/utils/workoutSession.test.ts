@@ -984,6 +984,25 @@ describe('workoutSession', () => {
         expect(buildSessionSubtitle(session, 30, 300)).toBe('30 min · 300 Cal');
       });
 
+      it('prints the energy through the given format, so a kJ account reads kJ (#1968)', () => {
+        const session = makeIndividual();
+        const kilojoules = {
+          toDisplay: (kcal: number) => Math.round(kcal * 4.184),
+          unit: 'kJ',
+        };
+        expect(
+          buildSessionSubtitleWithTranslation(
+            session,
+            30,
+            300,
+            i18n.t,
+            'kg',
+            'km',
+            kilojoules
+          )
+        ).toBe('30 min · 1255 kJ');
+      });
+
       it('includes distance in km', () => {
         const session = makeIndividual({ distance: 5.5 });
         expect(buildSessionSubtitle(session, 30, 300)).toBe(
