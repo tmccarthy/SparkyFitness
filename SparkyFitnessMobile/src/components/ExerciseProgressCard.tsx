@@ -11,6 +11,7 @@ import Animated, {
 import { useIsFocused } from '@react-navigation/native';
 import { useCSSVariable } from 'uniwind';
 import Icon from './Icon';
+import { useEnergyUnit } from '../hooks/useEnergyUnit';
 
 interface ProgressBarProps {
   label: string;
@@ -156,6 +157,7 @@ const ExerciseProgressCard: React.FC<ExerciseProgressCardProps> = ({
   onPressDetails,
 }) => {
   const { t } = useTranslation();
+  const { convert: convertEnergy, unitLabel } = useEnergyUnit();
   const [exerciseColor, trackColor, accentColor] = useCSSVariable([
     '--color-calories',
     '--color-progress-track',
@@ -200,9 +202,11 @@ const ExerciseProgressCard: React.FC<ExerciseProgressCardProps> = ({
           <View className="h-3" />
           <ProgressBar
             label={t('dashboard.calories', { defaultValue: 'Calories' })}
-            current={exerciseCalories}
-            goal={exerciseCaloriesGoal}
-            unit={t('nutrition.caloriesUnit', { defaultValue: 'Cal' })}
+            current={convertEnergy(exerciseCalories)}
+            goal={convertEnergy(exerciseCaloriesGoal)}
+            unit={unitLabel(
+              t('nutrition.caloriesUnit', { defaultValue: 'Cal' })
+            )}
             color={exerciseColor}
             trackColor={trackColor}
             opacity={0.5}

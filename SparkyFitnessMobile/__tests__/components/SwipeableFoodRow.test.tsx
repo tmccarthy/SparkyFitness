@@ -7,6 +7,7 @@ import {
 } from '../hooks/queryTestUtils';
 import SwipeableFoodRow from '../../src/components/SwipeableFoodRow';
 import type { FoodEntry } from '../../src/types/foodEntries';
+import { mockEnergyUnitRef } from '../helpers/energyUnitMock';
 
 jest.mock('../../src/hooks/useEnergyUnit', () =>
   require('../helpers/energyUnitMock').energyUnitModuleMock()
@@ -44,6 +45,26 @@ describe('SwipeableFoodRow', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockEnergyUnitRef.current = 'kcal';
+  });
+
+  it('shows the entry energy in kJ on the calorie affordance when the energy unit is kJ (#1968)', () => {
+    mockEnergyUnitRef.current = 'kJ';
+    const onAdjustServing = jest.fn();
+
+    const screen = renderRow(
+      <SwipeableFoodRow
+        entry={createEntry()}
+        nutrition={{ calories: 120, protein: 15, carbs: 8, fat: 2 }}
+        onAdjustServing={onAdjustServing}
+      />
+    );
+
+    // 120 kcal = 502 kJ
+    fireEvent.press(screen.getByText(/502 kJ/));
+
+    expect(onAdjustServing).toHaveBeenCalled();
+    expect(screen.queryByText(/Cal/)).toBeNull();
   });
 
   it('opens serving adjustment from the calorie affordance', () => {

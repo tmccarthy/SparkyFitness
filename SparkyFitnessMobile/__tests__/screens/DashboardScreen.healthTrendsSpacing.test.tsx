@@ -106,6 +106,10 @@ const preferences: UserPreferences = {
 
 const emptySeries = { data: [], isLoading: false, isError: false };
 
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
+
 jest.mock('../../src/hooks', () => ({
   useServerConnection: jest.fn(() => ({ isConnected: true, isLoading: false })),
   useDailySummary: jest.fn(() => ({

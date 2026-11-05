@@ -20,6 +20,7 @@ import { NoteMarkdown } from '../components/NoteMarkdown';
 import EntryImageOverride from '../components/EntryImageOverride';
 import Icon from '../components/Icon';
 import { useScreenHeader } from '../hooks/useScreenHeader';
+import { useEnergyUnit } from '../hooks/useEnergyUnit';
 import StepperInput from '../components/StepperInput';
 import BottomSheetPicker from '../components/BottomSheetPicker';
 import CalendarSheet, {
@@ -99,6 +100,7 @@ const EditLoggedMealScreen: React.FC<EditLoggedMealScreenProps> = ({
   route,
 }) => {
   const { t, i18n: translationI18n } = useTranslation();
+  const { convert: convertEnergy, unitLabel } = useEnergyUnit();
   const dateLocale = translationI18n.language.startsWith('pl')
     ? 'pl-PL'
     : 'en-US';
@@ -698,7 +700,7 @@ const EditLoggedMealScreen: React.FC<EditLoggedMealScreenProps> = ({
                 const scale =
                   food.serving_size > 0 ? scaledQty / food.serving_size : 0;
                 const foodCals = formatCaloriesDisplay(
-                  (food.calories ?? 0) * scale
+                  convertEnergy((food.calories ?? 0) * scale)
                 );
                 return (
                   <SwipeableIngredientRow
@@ -708,7 +710,7 @@ const EditLoggedMealScreen: React.FC<EditLoggedMealScreenProps> = ({
                       t('common.food', { defaultValue: 'Food' })
                     }
                     quantityLabel={`${formatServingSizeDisplay(scaledQty)} ${food.unit}`}
-                    caloriesLabel={`${foodCals} ${t('nutrition.caloriesShort', { defaultValue: 'kcal' })}`}
+                    caloriesLabel={`${foodCals} ${unitLabel(t('nutrition.caloriesShort', { defaultValue: 'kcal' }))}`}
                     showBottomBorder={index < ingredients.length - 1}
                     isLastIngredient={ingredients.length === 1}
                     disabled={isRowBusy}

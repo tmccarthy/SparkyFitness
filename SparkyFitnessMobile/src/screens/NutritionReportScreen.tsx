@@ -60,7 +60,7 @@ const NutritionReportScreen: React.FC<NutritionReportScreenProps> = ({
 
   const fmt = (value: number, digits = 0) =>
     formatLocalizedNumber(value, { maximumFractionDigits: digits });
-  const kcal = (value: number) =>
+  const energy = (value: number) =>
     t('nutritionReport.energy', {
       defaultValue: '{{value}} {{unit}}',
       value: fmt(toDisplay(value)),
@@ -220,7 +220,7 @@ const NutritionReportScreen: React.FC<NutritionReportScreenProps> = ({
             label: t('nutritionReport.averageVsGoal', {
               defaultValue: 'Average vs goal',
             }),
-            value: `${(goal.averageDifference ?? 0) > 0 ? '+' : ''}${kcal(
+            value: `${(goal.averageDifference ?? 0) > 0 ? '+' : ''}${energy(
               goal.averageDifference ?? 0
             )}`,
             testID: 'nutrition-goal-difference',
@@ -237,7 +237,7 @@ const NutritionReportScreen: React.FC<NutritionReportScreenProps> = ({
       ? [
           {
             label,
-            value: kcal(extreme.calories),
+            value: energy(extreme.calories),
             hint: formatTooltipDate(extreme.day),
             testID,
           },
@@ -289,7 +289,7 @@ const NutritionReportScreen: React.FC<NutritionReportScreenProps> = ({
           defaultValue:
             '{{weekday}} is your highest-calorie day, averaging {{kcal}}.',
           weekday: weekdayName(top.weekday),
-          kcal: kcal(top.average),
+          kcal: energy(top.average),
         })
       );
     }
@@ -312,7 +312,7 @@ const NutritionReportScreen: React.FC<NutritionReportScreenProps> = ({
             label: t('nutritionReport.avgCalories', {
               defaultValue: 'Avg calories',
             }),
-            value: kcal(insights.averages.calories),
+            value: energy(insights.averages.calories),
             change: change === null ? undefined : signedPercent(change),
             changeTone: 'neutral',
             testID: 'nutrition-highlight-calories',
@@ -383,7 +383,7 @@ const NutritionReportScreen: React.FC<NutritionReportScreenProps> = ({
                   label: t('nutritionReport.calories', {
                     defaultValue: 'Calories',
                   }),
-                  value: kcal(insights.averages.calories),
+                  value: energy(insights.averages.calories),
                   hint: changeHint,
                   testID: 'nutrition-average-calories',
                 },
@@ -494,7 +494,7 @@ const NutritionReportScreen: React.FC<NutritionReportScreenProps> = ({
               rows={insights.weekdayCalories.map(
                 ({ weekday, average: avg }) => ({
                   label: weekdayName(weekday),
-                  value: kcal(avg),
+                  value: energy(avg),
                   testID: `nutrition-weekday-${weekday}`,
                 })
               )}

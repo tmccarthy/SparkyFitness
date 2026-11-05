@@ -52,6 +52,10 @@ jest.mock('../../src/hooks/useDeleteFoodEntryMeal', () => ({
   useDeleteFoodEntryMeal: jest.fn(),
 }));
 
+jest.mock('../../src/hooks/useEnergyUnit', () =>
+  require('../helpers/energyUnitMock').energyUnitModuleMock()
+);
+
 jest.mock('../../src/hooks', () => ({
   useMealTypes: jest.fn(),
   usePreferences: jest.fn(() => ({
